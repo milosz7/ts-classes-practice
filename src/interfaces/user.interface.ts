@@ -6,8 +6,8 @@ interface IUser {
   lastName: string;
   email: string;
   dob: Date;
-  addresses: string[];
-  role: Roles
+  addresses?: string[];
+  role?: Roles
 }
 
 export default IUser;
