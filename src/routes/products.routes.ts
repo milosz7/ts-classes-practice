@@ -55,7 +55,9 @@ router.put('/:id', (req, res, next) => {
   const id: string = req.params.id;
   const item: IProduct = req.body;
   try {
-    return res.json(controller.update(id, item));
+    const data = controller.update(id, item);
+    if (!data) throw new CustomError(404, 'Could not find any data to edit.');
+    return res.json(data);
   } catch (err) {
     if (err instanceof CustomError) {
       return next({ status: err.status, message: err.message });
@@ -67,7 +69,9 @@ router.put('/:id', (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
   const id: string = req.params.id;
   try {
-    return res.json(controller.delete(id));
+    const response = controller.delete(id);
+    if (!response) throw new CustomError(404, 'Could not find any data to delete.');
+    return res.status(200).json({message: 'Success!'});
   } catch (err) {
     if (err instanceof CustomError) {
       return next({ status: err.status, message: err.message });
