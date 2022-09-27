@@ -2,6 +2,7 @@ import IUserRepository from '../interfaces/users-repository.interface';
 import IUser from '../interfaces/user.interface';
 import { IfExists } from '../interfaces/generic-helpers';
 import shortid from 'shortid';
+import Roles from '../enums/roles.enums';
 
 class UsersRepository implements IUserRepository {
   private users: IUser[] = [];
@@ -10,12 +11,17 @@ class UsersRepository implements IUserRepository {
     const newUser = {
       ...data,
       id: shortid(),
+      role: Roles.CLIENT,
+      dob: new Date(data.dob),
     };
+    this.users.push(newUser);
     return newUser;
   }
 
   update(id: string, newData: IUser): IfExists<IUser> {
-    this.users.map((user) => (user.id === id ? { ...newData, id: user.id } : user));
+    this.users.map((user) =>
+      user.id === id ? { ...newData, id: user.id, role: user.role, dob: user.dob } : user
+    );
     return this.getById(id);
   }
 
