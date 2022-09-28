@@ -1,16 +1,17 @@
 import IProductRepository from '../interfaces/product-repository.interface';
-import IProduct from '../interfaces/product.interface';
+import { IProduct, SerializedProduct } from '../interfaces/product.interface';
 import shortid from 'shortid';
 import { IfExists } from '../interfaces/generic-helpers';
+import CustomError from '../helpers/custom-error';
 
 class ProductsRepository implements IProductRepository {
-  private products: IProduct[] = [];
+  private products: SerializedProduct[] = [];
 
   private getCurrentTime(): Date {
     return new Date();
   }
 
-  getAll() {
+  getAll(): SerializedProduct[] {
     return this.products;
   }
 
@@ -18,37 +19,62 @@ class ProductsRepository implements IProductRepository {
     return this.products.find((product) => product.name === name);
   }
 
-  getById(id: string): IfExists<IProduct> {
+  getById(id: string): IfExists<SerializedProduct> {
     return this.products.find((product) => product.id === id);
   }
 
-  addNew(item: IProduct): IProduct {
+  addNew(item: IProduct): SerializedProduct {
     const currentTime = this.getCurrentTime();
-    item.id = shortid();
-    item.created = currentTime;
-    item.modified = currentTime;
-    this.products.push(item);
-    return item;
+    const serializedItem: SerializedProduct = {
+      id: shortid(),
+      name: item.name,
+      price: +item.price,
+      count: +item.count,
+      tags: [...item.tags],
+      created: currentTime,
+      modified: currentTime,
+    };
+    this.products.push(serializedItem);
+    return serializedItem;
   }
 
-  update(id: string, newData: IProduct) {
+  update(id: string, newData: IProduct): IfExists<SerializedProduct> {
     const currentTime = this.getCurrentTime();
+    const serializedNewData = {
+      ...newData,
+      price: +newData.price,
+      count: +newData.count,
+    };
     this.products = this.products.map((product) =>
-      product.id === id
-        ? { ...newData, modified: currentTime, id: product.id, created: product.created }
-        : product
+      product.id === id ? { ...product, ...serializedNewData, modified: currentTime } : product
     );
 
     return this.getById(id);
   }
 
   delete(id: string): boolean {
-    const toRemoveIdx = this.products.findIndex(product => product.id === id);
+    const toRemoveIdx = this.products.findIndex((product) => product.id === id);
     if (toRemoveIdx !== -1) {
       this.products.splice(toRemoveIdx, 1);
       return true;
     }
     return false;
+  }
+
+  validateBeforeSave(data: IProduct): void {
+    const { name, price, count, tags } = data;
+    if (!name || !parseInt(price) || !parseInt(count)) {
+      throw new CustomError(400, 'Provided data is invalid.');
+    }
+    tags.forEach((tag) => {
+      if (typeof tag !== 'string') {
+        throw new CustomError(400, 'Provided data is invalid.');
+      }
+    });
+  }
+
+  validateBeforeUpdate(data: IProduct): void {
+    this.validateBeforeSave(data);
   }
 }
 
