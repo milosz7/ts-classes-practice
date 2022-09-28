@@ -1,7 +1,7 @@
 import express from 'express';
 import ProductsController from '../controllers/products-controller';
 import ProductsRepository from '../repositories/products-repository';
-import IProduct from '../interfaces/product.interface';
+import { IProduct } from '../interfaces/product.interface';
 import { internalServerError } from '../constants';
 import CustomError from '../helpers/custom-error';
 
@@ -53,6 +53,7 @@ router.get('/name/:name', (req, res, next) => {
 
 router.put('/:id', (req, res, next) => {
   const id: string = req.params.id;
+  controller.validateBeforeUpdate(req.body);
   const item: IProduct = req.body;
   try {
     const data = controller.update(id, item);
@@ -71,7 +72,7 @@ router.delete('/:id', (req, res, next) => {
   try {
     const response = controller.delete(id);
     if (!response) throw new CustomError(404, 'Could not find any data to delete.');
-    return res.status(200).json({message: 'Success!'});
+    return res.status(200).json({ message: 'Success!' });
   } catch (err) {
     if (err instanceof CustomError) {
       return next({ status: err.status, message: err.message });
@@ -82,6 +83,7 @@ router.delete('/:id', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
   try {
+    controller.validateBeforeSave(req.body);
     return res.json(controller.addNew(req.body as IProduct));
   } catch (err) {
     if (err instanceof CustomError) {
