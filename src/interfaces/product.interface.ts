@@ -1,13 +1,21 @@
 import Tags from '../enums/tags.enums';
 
-interface IProduct {
+export interface IProduct {
   id?: string;
   name: string;
-  price: number;
-  count: number;
+  price: string;
+  count: string;
   tags: Tags[];
   created?: Date;
   modified?: Date;
 }
 
-export default IProduct;
+export interface SerializedProduct {
+  id: string;
+  name: string;
+  price: number;
+  count: number;
+  tags: Tags[];
+  created: Date;
+  modified: Date;
+}
