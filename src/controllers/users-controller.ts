@@ -8,8 +8,8 @@ class UsersController extends BaseController<IUser> {
     super(usersRepository);
   }
 
-  getByLastName(name: string): IfExists<IUser> {
-    return this.usersRepository.getUserByLastName(name);
+  getUsersByRole(role: string): IUser[] {
+    return this.usersRepository.getUsersByRole(role);
   }
 }
 
