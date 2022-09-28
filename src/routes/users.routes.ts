@@ -49,11 +49,11 @@ router.get('/:id', (req, res, next) => {
   }
 });
 
-router.get('/username/:lastname', (req, res, next) => {
+router.get('/role/:role', (req, res, next) => {
   try {
-    const lastName = req.params.lastname;
-    const data = controller.getByLastName(lastName);
-    if (!data) throw new CustomError(404, `User data with last name: ${lastName} was not found.`);
+    const role = req.params.role;
+    const data = controller.getUsersByRole(role);
+    if (!data.length) throw new CustomError(404, `Users data with role: ${role} was not found.`);
     return res.json(data);
   } catch (err) {
     if (err instanceof CustomError) {

@@ -39,8 +39,8 @@ class UsersRepository implements IUserRepository {
     return this.users;
   }
 
-  getUsersByRole(lastName: string): IUser[] {
-    return this.users.filter((user) => user.lastName.toLowerCase() === lastName.toLowerCase());
+  getUsersByRole(role: string): IUser[] {
+    return this.users.filter((user) => user.role?.toLowerCase()  === role.toLowerCase());
   }
 
   getById(id: string): IfExists<IUser> {
