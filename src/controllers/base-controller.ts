@@ -1,18 +1,18 @@
 import BaseRepository from '../interfaces/base-repository.interface';
-import { IfExists } from '../interfaces/generic-helpers';
+import { IfExists, IsExtendable } from '../interfaces/generic-helpers';
 
-abstract class BaseController<T> {
-  constructor(private repository: BaseRepository<T>) {}
+abstract class BaseController<T, K = void> {
+  constructor(private repository: BaseRepository<T, K>) {}
 
-  getAll(): T[] {
+  getAll(): (IsExtendable<T, K>)[] {
     return this.repository.getAll();
   }
 
-  addNew(item: T): T {
+  addNew(item: T): IsExtendable<T, K> {
     return this.repository.addNew(item);
   }
 
-  update(id: string, item: T): IfExists<T> {
+  update(id: string, item: T): IfExists<IsExtendable<T, K>> {
     return this.repository.update(id, item);
   }
 
@@ -20,7 +20,7 @@ abstract class BaseController<T> {
     return this.repository.delete(id);
   }
 
-  getById(id: string): IfExists<T> {
+  getById(id: string): IfExists<IsExtendable<T, K>> {
     return this.repository.getById(id);
   }
 }
