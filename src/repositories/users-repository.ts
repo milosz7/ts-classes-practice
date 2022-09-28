@@ -19,8 +19,9 @@ class UsersRepository implements IUserRepository {
   }
 
   update(id: string, newData: IUser): IfExists<IUser> {
-    this.users.map((user) =>
-      user.id === id ? { ...newData, id: user.id, role: user.role, dob: user.dob } : user
+    const dob: Date = new Date(newData.dob);
+    this.users = this.users.map((user) =>
+      user.id === id ? {...user, ...newData, dob: dob } : user
     );
     return this.getById(id);
   }
