@@ -2,7 +2,7 @@ import express from 'express';
 import UsersRepository from '../repositories/users-repository';
 import UsersController from '../controllers/users-controller';
 import { internalServerError } from '../constants';
-import IUser from '../interfaces/user.interface';
+import { IUser } from '../interfaces/user.interface';
 import CustomError from '../helpers/custom-error';
 
 const repository = new UsersRepository();
@@ -10,7 +10,7 @@ const controller = new UsersController(repository);
 
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
+router.get('/', (_, res, next) => {
   try {
     const data = controller.getAll();
     if (!data.length) throw new CustomError(404, 'Not found.');
@@ -25,6 +25,7 @@ router.get('/', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
   try {
+    controller.validateBeforeSave(req.body);
     const user: IUser = req.body;
     return res.json(controller.addNew(user));
   } catch (err) {
@@ -68,7 +69,7 @@ router.delete('/:id', (req, res, next) => {
     const id = req.params.id;
     const response = controller.delete(id);
     if (!response) throw new CustomError(404, 'Could not find data to delete.');
-    return res.status(200).json({message: 'Success!'});
+    return res.status(200).json({ message: 'Success!' });
   } catch (err) {
     if (err instanceof CustomError) {
       return next({ status: err.status, message: err.message });
@@ -80,6 +81,7 @@ router.delete('/:id', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   try {
     const id = req.params.id;
+    controller.validateBeforeUpdate(req.body);
     const user: IUser = req.body;
     const data = controller.update(id, user);
     if (!data) throw new CustomError(404, 'Could not find data to edit.');
