@@ -21,7 +21,7 @@ class UsersRepository implements IUserRepository {
   update(id: string, newData: IUser): IfExists<IUser> {
     const dob: Date = new Date(newData.dob);
     this.users = this.users.map((user) =>
-      user.id === id ? {...user, ...newData, dob: dob } : user
+      user.id === id ? { ...user, ...newData, dob: dob, } : user
     );
     return this.getById(id);
   }
@@ -40,7 +40,7 @@ class UsersRepository implements IUserRepository {
   }
 
   getUsersByRole(lastName: string): IUser[] {
-    return this.users.filter((user) => user.lastName === lastName);
+    return this.users.filter((user) => user.lastName.toLowerCase() === lastName.toLowerCase());
   }
 
   getById(id: string): IfExists<IUser> {
