@@ -2,7 +2,7 @@ import IProductRepository from '../interfaces/product-repository.interface';
 import { IProduct, SerializedProduct } from '../interfaces/product.interface';
 import shortid from 'shortid';
 import { IfExists } from '../interfaces/generic-helpers';
-import CustomError from '../helpers/custom-error';
+import throwInvalidDataError from '../helpers/throwInvalidDataError';
 
 class ProductsRepository implements IProductRepository {
   private products: SerializedProduct[] = [];
@@ -64,11 +64,11 @@ class ProductsRepository implements IProductRepository {
   validateBeforeSave(data: IProduct): void {
     const { name, price, count, tags } = data;
     if (!name || !parseInt(price) || !parseInt(count)) {
-      throw new CustomError(400, 'Provided data is invalid.');
+      throwInvalidDataError();
     }
     tags.forEach((tag) => {
       if (typeof tag !== 'string') {
-        throw new CustomError(400, 'Provided data is invalid.');
+        throwInvalidDataError();
       }
     });
   }
